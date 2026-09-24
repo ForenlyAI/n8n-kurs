@@ -1,0 +1,71 @@
+{
+ "name": "Talep özeti",
+ "nodes": [
+  {
+   "id": "51dcf6eb-1a05-4ade-8aec-34517e311a3d",
+   "name": "On form submission",
+   "type": "n8n-nodes-base.formTrigger",
+   "typeVersion": 2.3,
+   "position": [
+    0,
+    0
+   ],
+   "webhookId": "58300c7a-fbbb-4954-8188-23fecface133",
+   "parameters": {
+    "formTitle": "Talep formu",
+    "formDescription": "Adınızı ve talebinizi yazın.",
+    "formFields": {
+     "values": [
+      {
+       "fieldLabel": "Ad",
+       "requiredField": true
+      },
+      {
+       "fieldLabel": "Talep",
+       "fieldType": "textarea",
+       "requiredField": true
+      }
+     ]
+    },
+    "options": {}
+   }
+  },
+  {
+   "id": "1aab6dcd-d079-4be3-a252-d58909f25955",
+   "name": "Edit Fields",
+   "type": "n8n-nodes-base.set",
+   "typeVersion": 3.4,
+   "position": [
+    220,
+    0
+   ],
+   "parameters": {
+    "assignments": {
+     "assignments": [
+      {
+       "id": "fd94eff3-4119-4879-a586-049f69fd7274",
+       "name": "ozet",
+       "value": "={{ $json.Ad }} şunu istiyor: {{ $json.Talep }}",
+       "type": "string"
+      }
+     ]
+    },
+    "options": {}
+   }
+  }
+ ],
+ "connections": {
+  "On form submission": {
+   "main": [
+    [
+     {
+      "node": "Edit Fields",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "settings": {}
+}
