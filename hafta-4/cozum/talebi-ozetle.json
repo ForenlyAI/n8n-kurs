@@ -1,0 +1,95 @@
+{
+ "name": "Talebi özetle",
+ "nodes": [
+  {
+   "id": "f208eb6a-8738-4d0c-90d6-fff4819f26a5",
+   "name": "On form submission",
+   "type": "n8n-nodes-base.formTrigger",
+   "typeVersion": 2.3,
+   "position": [
+    0,
+    0
+   ],
+   "parameters": {
+    "formTitle": "Talep formu",
+    "formDescription": "Adınızı ve talebinizi yazın.",
+    "formFields": {
+     "values": [
+      {
+       "fieldLabel": "Ad",
+       "requiredField": true
+      },
+      {
+       "fieldLabel": "Talep",
+       "fieldType": "textarea",
+       "requiredField": true
+      }
+     ]
+    },
+    "options": {}
+   }
+  },
+  {
+   "id": "2a76b7b9-0058-4974-b8aa-954dd2637be1",
+   "name": "Basic LLM Chain",
+   "type": "@n8n/n8n-nodes-langchain.chainLlm",
+   "typeVersion": 1.9,
+   "position": [
+    240,
+    0
+   ],
+   "parameters": {
+    "promptType": "define",
+    "text": "=Aşağıdaki müşteri talebini Türkçe, tek cümlede özetle. Yalnız özeti yaz.\n\nTalep: {{ $json.Talep }}",
+    "batching": {
+     "batchSize": 1,
+     "delayBetweenBatches": 6000
+    }
+   },
+   "retryOnFail": true,
+   "maxTries": 5,
+   "waitBetweenTries": 5000
+  },
+  {
+   "id": "b964f5ea-0e3a-49fc-b65a-0566670af50f",
+   "name": "Google Gemini Chat Model",
+   "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+   "typeVersion": 1.1,
+   "position": [
+    240,
+    220
+   ],
+   "parameters": {
+    "modelName": "models/gemini-3-flash-preview",
+    "options": {
+     "temperature": 0
+    }
+   }
+  }
+ ],
+ "connections": {
+  "On form submission": {
+   "main": [
+    [
+     {
+      "node": "Basic LLM Chain",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Google Gemini Chat Model": {
+   "ai_languageModel": [
+    [
+     {
+      "node": "Basic LLM Chain",
+      "type": "ai_languageModel",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "settings": {}
+}
