@@ -1,0 +1,10 @@
+{
+  "name": "n8n kurs ortamı (n8n 2.40.6)",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "calisma",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "forwardPorts": [5678],
+  "portsAttributes": { "5678": { "label": "n8n editörü", "onAutoForward": "openBrowser" } },
+  "hostRequirements": { "cpus": 2, "memory": "4gb" },
+  "remoteEnv": { "N8N_EDITOR_BASE_URL": "https://${localEnv:CODESPACE_NAME}-5678.${localEnv:GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}" }
+}
