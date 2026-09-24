@@ -3,8 +3,28 @@
   "dockerComposeFile": "docker-compose.yml",
   "service": "calisma",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-  "forwardPorts": [5678],
-  "portsAttributes": { "5678": { "label": "n8n editörü", "onAutoForward": "openBrowser" } },
-  "hostRequirements": { "cpus": 2, "memory": "4gb" },
-  "remoteEnv": { "N8N_EDITOR_BASE_URL": "https://${localEnv:CODESPACE_NAME}-5678.${localEnv:GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}" }
+  "forwardPorts": [
+    5678
+  ],
+  "portsAttributes": {
+    "5678": {
+      "label": "n8n editörü",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "4gb"
+  },
+  "remoteEnv": {
+    "N8N_EDITOR_BASE_URL": "https://${localEnv:CODESPACE_NAME}-5678.${localEnv:GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
+  },
+  "runServices": [
+    "calisma",
+    "n8n"
+  ],
+  "features": {
+    "ghcr.io/devcontainers/features/sshd:1": {}
+  },
+  "postStartCommand": "for i in $(seq 1 60); do curl -sf localhost:5678/healthz >/dev/null && echo 'n8n hazır: 5678' && exit 0; sleep 3; done; echo 'n8n açılmadı: docker compose logs n8n'"
 }
