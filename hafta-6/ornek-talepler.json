@@ -1,0 +1,67 @@
+{
+ "not": "ÖRNEK VERİ — 12 sentetik talep (10 normal + 2 uç). Gerçek müşteri değildir. 'beklenen' öğrencinin önceden yazdığı etikettir.",
+ "talepler": [
+  {
+   "Ad": "Örnek Müşteri 1",
+   "Talep": "Cuma akşamı için iki kişilik masa ayırtmak istiyorum.",
+   "beklenen": "siparis"
+  },
+  {
+   "Ad": "Örnek Müşteri 2",
+   "Talep": "Siparişim ne zaman kargoya verilir?",
+   "beklenen": "soru"
+  },
+  {
+   "Ad": "Örnek Müşteri 3",
+   "Talep": "Faturamı e-posta ile alabilir miyim?",
+   "beklenen": "soru"
+  },
+  {
+   "Ad": "Örnek Müşteri 4",
+   "Talep": "Kargom üç gündür yolda, kimse telefonlarıma dönmüyor.",
+   "beklenen": "sikayet"
+  },
+  {
+   "Ad": "Örnek Müşteri 5",
+   "Talep": "Mavi kazaktan M beden iki adet sipariş vermek istiyorum.",
+   "beklenen": "siparis"
+  },
+  {
+   "Ad": "Örnek Müşteri 6",
+   "Talep": "Gelen ürün kırık çıktı, çok memnun kalmadım.",
+   "beklenen": "sikayet"
+  },
+  {
+   "Ad": "Örnek Müşteri 7",
+   "Talep": "Hafta sonu kaçta açıksınız?",
+   "beklenen": "soru"
+  },
+  {
+   "Ad": "Örnek Müşteri 8",
+   "Talep": "Yarın öğlen için on kişilik yemek siparişi vermek istiyorum.",
+   "beklenen": "siparis"
+  },
+  {
+   "Ad": "Örnek Müşteri 9",
+   "Talep": "Kuryeniz kaba davrandı, yemek de soğuk geldi.",
+   "beklenen": "sikayet"
+  },
+  {
+   "Ad": "Örnek Müşteri 10",
+   "Talep": "İade süreci nasıl işliyor?",
+   "beklenen": "soru"
+  },
+  {
+   "Ad": "Örnek Müşteri 11",
+   "Talep": "?",
+   "beklenen": "(uç) çökmemeli",
+   "uc": "anlamsız kısa girdi"
+  },
+  {
+   "Ad": "Örnek Müşteri 12",
+   "Talep": "Bugün hava çok güzel, iyi hafta sonları.",
+   "beklenen": "(uç) çökmemeli",
+   "uc": "konu dışı"
+  }
+ ]
+}
