@@ -18,5 +18,6 @@
 | 3 | `hafta-3/cozum/` | Talep kaydı (Form → Data table → If → Send Email). İçe aktarınca tabloyu (ad, talep, acil) ve SMTP kimlik bilgisini kendiniz seçin |
 | 4 | `hafta-4/cozum/` | Talebi özetle · Talebi etiketle (Gemini + Structured Output Parser + Switch → 3 tablo). İçe aktarınca Gemini kimlik bilgisini ve tabloları (siparisler, sikayetler, sorular: ad, talep, ozet) seçin |
 | 5 | `hafta-5/cozum/` | Hata bildirimi (Error Trigger → Send email). İçe aktarınca SMTP kimlik bilgisini seçin, **Publish** edin, sonra talep akışının Settings → Error Workflow alanında seçin |
+| 6 | `hafta-6/` | Capstone: `cozum/talep-karsilama.json` · `ornek-talepler.json` (12 ÖRNEK VERİ) · `TEST-TABLOSU.csv` (doldurulacak) |
 
 Hava verisi: [Open-Meteo](https://open-meteo.com/) (CC BY 4.0, ticari olmayan kullanım).
