@@ -1,0 +1,50 @@
+{
+ "name": "Hata bildirimi",
+ "nodes": [
+  {
+   "id": "56ff54b7-3bb9-479e-b012-fc7376b39956",
+   "name": "Error Trigger",
+   "type": "n8n-nodes-base.errorTrigger",
+   "typeVersion": 1,
+   "position": [
+    0,
+    0
+   ],
+   "parameters": {}
+  },
+  {
+   "id": "0c3bcc82-829c-4459-bffc-88d98ddec956",
+   "name": "Send email",
+   "type": "n8n-nodes-base.emailSend",
+   "typeVersion": 2.1,
+   "position": [
+    240,
+    0
+   ],
+   "parameters": {
+    "fromEmail": "siz@ornek.com",
+    "toEmail": "siz@ornek.com",
+    "subject": "=Akış hata verdi: {{ $json.workflow.name }}",
+    "emailFormat": "text",
+    "text": "=Akış: {{ $json.workflow.name }}\nDüğüm: {{ $json.execution.lastNodeExecuted }}\nHata: {{ $json.execution.error.message }}\nYürütme: {{ $json.execution.url }}",
+    "options": {
+     "appendAttribution": false
+    }
+   }
+  }
+ ],
+ "connections": {
+  "Error Trigger": {
+   "main": [
+    [
+     {
+      "node": "Send email",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "settings": {}
+}
