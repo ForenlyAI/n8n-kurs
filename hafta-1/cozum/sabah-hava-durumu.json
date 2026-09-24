@@ -1,0 +1,55 @@
+{
+ "name": "Sabah hava durumu",
+ "nodes": [
+  {
+   "parameters": {
+    "url": "https://api.open-meteo.com/v1/forecast?latitude=39.78&longitude=30.52&current=temperature_2m&timezone=Europe/Istanbul",
+    "options": {}
+   },
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.5,
+   "position": [
+    224,
+    0
+   ],
+   "id": "d7ec8c4f-fba1-4045-911a-c7130258ff72",
+   "name": "HTTP Request"
+  },
+  {
+   "parameters": {
+    "rule": {
+     "interval": [
+      {
+       "triggerAtHour": 8
+      }
+     ]
+    }
+   },
+   "type": "n8n-nodes-base.scheduleTrigger",
+   "typeVersion": 1.4,
+   "position": [
+    0,
+    0
+   ],
+   "id": "c0907118-0cd2-447f-a62f-875988c92d4b",
+   "name": "Schedule Trigger"
+  }
+ ],
+ "connections": {
+  "Schedule Trigger": {
+   "main": [
+    [
+     {
+      "node": "HTTP Request",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "settings": {
+  "executionOrder": "v1",
+  "binaryMode": "separate"
+ }
+}
