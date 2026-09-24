@@ -1,0 +1,199 @@
+{
+ "name": "Talep kaydı",
+ "nodes": [
+  {
+   "id": "e64ce0f0-a09c-4b7b-9617-92f05f75536e",
+   "name": "On form submission",
+   "type": "n8n-nodes-base.formTrigger",
+   "typeVersion": 2.3,
+   "position": [
+    0,
+    0
+   ],
+   "parameters": {
+    "formTitle": "Talep formu",
+    "formDescription": "Adınızı ve talebinizi yazın.",
+    "formFields": {
+     "values": [
+      {
+       "fieldLabel": "Ad",
+       "requiredField": true
+      },
+      {
+       "fieldLabel": "Talep",
+       "fieldType": "textarea",
+       "requiredField": true
+      },
+      {
+       "fieldLabel": "Acil mi?",
+       "fieldType": "dropdown",
+       "requiredField": true,
+       "fieldOptions": {
+        "values": [
+         {
+          "option": "Hayır"
+         },
+         {
+          "option": "Evet"
+         }
+        ]
+       }
+      }
+     ]
+    },
+    "options": {}
+   }
+  },
+  {
+   "id": "244e6469-e74d-4970-8384-02eaadf669d9",
+   "name": "Insert row",
+   "type": "n8n-nodes-base.dataTable",
+   "typeVersion": 1.1,
+   "position": [
+    240,
+    0
+   ],
+   "parameters": {
+    "dataTableId": {
+     "__rl": true,
+     "mode": "list",
+     "value": ""
+    },
+    "columns": {
+     "mappingMode": "defineBelow",
+     "value": {
+      "ad": "={{ $json.Ad }}",
+      "talep": "={{ $json.Talep }}",
+      "acil": "={{ $json['Acil mi?'] }}"
+     },
+     "matchingColumns": [],
+     "schema": [
+      {
+       "id": "ad",
+       "displayName": "ad",
+       "required": false,
+       "defaultMatch": false,
+       "display": true,
+       "type": "string",
+       "readOnly": false,
+       "removed": false
+      },
+      {
+       "id": "talep",
+       "displayName": "talep",
+       "required": false,
+       "defaultMatch": false,
+       "display": true,
+       "type": "string",
+       "readOnly": false,
+       "removed": false
+      },
+      {
+       "id": "acil",
+       "displayName": "acil",
+       "required": false,
+       "defaultMatch": false,
+       "display": true,
+       "type": "string",
+       "readOnly": false,
+       "removed": false
+      }
+     ],
+     "attemptToConvertTypes": false,
+     "convertFieldsToString": false
+    },
+    "options": {}
+   }
+  },
+  {
+   "id": "9f14bd92-e492-4e08-b0a1-3037941c7846",
+   "name": "If",
+   "type": "n8n-nodes-base.if",
+   "typeVersion": 2.3,
+   "position": [
+    480,
+    0
+   ],
+   "parameters": {
+    "conditions": {
+     "options": {
+      "caseSensitive": true,
+      "leftValue": "",
+      "typeValidation": "strict",
+      "version": 3
+     },
+     "conditions": [
+      {
+       "id": "28f91ea8-bff2-4ba9-b99e-a13da3b261e5",
+       "leftValue": "={{ $json.acil }}",
+       "rightValue": "Evet",
+       "operator": {
+        "type": "string",
+        "operation": "equals"
+       }
+      }
+     ],
+     "combinator": "and"
+    },
+    "options": {}
+   }
+  },
+  {
+   "id": "cc0110e5-db01-438c-970b-96a7af7a8042",
+   "name": "Send email",
+   "type": "n8n-nodes-base.emailSend",
+   "typeVersion": 2.1,
+   "position": [
+    720,
+    -100
+   ],
+   "parameters": {
+    "fromEmail": "siz@ornek.com",
+    "toEmail": "siz@ornek.com",
+    "subject": "=Acil talep: {{ $('On form submission').item.json.Ad }}",
+    "emailFormat": "text",
+    "text": "=Yeni acil talep geldi.\n\nAd: {{ $('On form submission').item.json.Ad }}\nTalep: {{ $('On form submission').item.json.Talep }}\n\nTalep tabloya yazıldı.",
+    "options": {
+     "appendAttribution": false
+    }
+   }
+  }
+ ],
+ "connections": {
+  "On form submission": {
+   "main": [
+    [
+     {
+      "node": "Insert row",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Insert row": {
+   "main": [
+    [
+     {
+      "node": "If",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "If": {
+   "main": [
+    [
+     {
+      "node": "Send email",
+      "type": "main",
+      "index": 0
+     }
+    ],
+    []
+   ]
+  }
+ },
+ "settings": {}
+}
