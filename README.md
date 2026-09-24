@@ -17,5 +17,6 @@
 | 2 | `hafta-2/cozum/` | Üç şehir sıcaklık (3 öğe) · Hava cümlesi (ifade) · Talep özeti (Form Trigger → Edit Fields) |
 | 3 | `hafta-3/cozum/` | Talep kaydı (Form → Data table → If → Send Email). İçe aktarınca tabloyu (ad, talep, acil) ve SMTP kimlik bilgisini kendiniz seçin |
 | 4 | `hafta-4/cozum/` | Talebi özetle · Talebi etiketle (Gemini + Structured Output Parser + Switch → 3 tablo). İçe aktarınca Gemini kimlik bilgisini ve tabloları (siparisler, sikayetler, sorular: ad, talep, ozet) seçin |
+| 5 | `hafta-5/cozum/` | Hata bildirimi (Error Trigger → Send email). İçe aktarınca SMTP kimlik bilgisini seçin, **Publish** edin, sonra talep akışının Settings → Error Workflow alanında seçin |
 
 Hava verisi: [Open-Meteo](https://open-meteo.com/) (CC BY 4.0, ticari olmayan kullanım).
