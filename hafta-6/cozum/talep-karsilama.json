@@ -1,0 +1,462 @@
+{
+ "name": "Talep karşılama",
+ "nodes": [
+  {
+   "id": "802b04b8-803d-4a75-ae33-ee8bd61a55b6",
+   "name": "On form submission",
+   "type": "n8n-nodes-base.formTrigger",
+   "typeVersion": 2.3,
+   "position": [
+    0,
+    0
+   ],
+   "parameters": {
+    "formTitle": "Talep formu",
+    "formDescription": "Adınızı ve talebinizi yazın.",
+    "formFields": {
+     "values": [
+      {
+       "fieldLabel": "Ad",
+       "requiredField": true
+      },
+      {
+       "fieldLabel": "Talep",
+       "fieldType": "textarea",
+       "requiredField": true
+      }
+     ]
+    },
+    "options": {}
+   }
+  },
+  {
+   "id": "007e126a-a828-4423-af96-af2e228830f7",
+   "name": "Basic LLM Chain",
+   "type": "@n8n/n8n-nodes-langchain.chainLlm",
+   "typeVersion": 1.9,
+   "position": [
+    240,
+    0
+   ],
+   "parameters": {
+    "promptType": "define",
+    "text": "=Aşağıdaki müşteri talebini sınıflandır.\ntur alanı YALNIZ şu üç değerden biri olabilir: siparis, sikayet, soru.\nTalep hem şikâyet hem sipariş içeriyorsa asıl isteğe bak. Anlamsız ya da boş talep: soru.\nozet alanına talebi tek cümlede Türkçe özetle.\n\nTalep: {{ $json.Talep }}",
+    "batching": {
+     "batchSize": 1,
+     "delayBetweenBatches": 6000
+    },
+    "hasOutputParser": true
+   },
+   "retryOnFail": true,
+   "maxTries": 5,
+   "waitBetweenTries": 5000
+  },
+  {
+   "id": "ff99facd-9bcc-4850-93b9-e443f2f1829c",
+   "name": "Google Gemini Chat Model",
+   "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+   "typeVersion": 1.1,
+   "position": [
+    200,
+    220
+   ],
+   "parameters": {
+    "modelName": "models/gemini-3-flash-preview",
+    "options": {
+     "temperature": 0
+    }
+   }
+  },
+  {
+   "id": "ab69c51e-bdd3-45bb-bfd3-695e1f986991",
+   "name": "Structured Output Parser",
+   "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+   "typeVersion": 1.3,
+   "position": [
+    420,
+    220
+   ],
+   "parameters": {
+    "schemaType": "manual",
+    "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"tur\": {\n      \"type\": \"string\",\n      \"enum\": [\n        \"siparis\",\n        \"sikayet\",\n        \"soru\"\n      ]\n    },\n    \"ozet\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\n    \"tur\",\n    \"ozet\"\n  ]\n}"
+   }
+  },
+  {
+   "id": "d4f0eea4-9200-4f42-8dce-349a531138f1",
+   "name": "Switch",
+   "type": "n8n-nodes-base.switch",
+   "typeVersion": 3.4,
+   "position": [
+    560,
+    0
+   ],
+   "parameters": {
+    "rules": {
+     "values": [
+      {
+       "conditions": {
+        "options": {
+         "caseSensitive": true,
+         "leftValue": "",
+         "typeValidation": "strict",
+         "version": 2
+        },
+        "conditions": [
+         {
+          "id": "1a9a1947-de9e-4185-860c-f57cecc059a2",
+          "leftValue": "={{ $json.output.tur }}",
+          "rightValue": "siparis",
+          "operator": {
+           "type": "string",
+           "operation": "equals"
+          }
+         }
+        ],
+        "combinator": "and"
+       },
+       "renameOutput": true,
+       "outputKey": "sipariş"
+      },
+      {
+       "conditions": {
+        "options": {
+         "caseSensitive": true,
+         "leftValue": "",
+         "typeValidation": "strict",
+         "version": 2
+        },
+        "conditions": [
+         {
+          "id": "ff3b3e18-4386-4453-b5e7-dcd76fe83476",
+          "leftValue": "={{ $json.output.tur }}",
+          "rightValue": "sikayet",
+          "operator": {
+           "type": "string",
+           "operation": "equals"
+          }
+         }
+        ],
+        "combinator": "and"
+       },
+       "renameOutput": true,
+       "outputKey": "şikâyet"
+      },
+      {
+       "conditions": {
+        "options": {
+         "caseSensitive": true,
+         "leftValue": "",
+         "typeValidation": "strict",
+         "version": 2
+        },
+        "conditions": [
+         {
+          "id": "32d51269-efa6-4e2b-9a44-6d0631e56591",
+          "leftValue": "={{ $json.output.tur }}",
+          "rightValue": "soru",
+          "operator": {
+           "type": "string",
+           "operation": "equals"
+          }
+         }
+        ],
+        "combinator": "and"
+       },
+       "renameOutput": true,
+       "outputKey": "soru"
+      }
+     ]
+    },
+    "options": {}
+   }
+  },
+  {
+   "id": "3531a08e-fbc7-449f-82aa-f63e84cb5ddb",
+   "name": "Sipariş tablosu",
+   "type": "n8n-nodes-base.dataTable",
+   "typeVersion": 1.1,
+   "position": [
+    820,
+    -160
+   ],
+   "parameters": {
+    "dataTableId": {
+     "__rl": true,
+     "mode": "list",
+     "value": ""
+    },
+    "columns": {
+     "mappingMode": "defineBelow",
+     "value": {
+      "ad": "={{ $('On form submission').item.json.Ad }}",
+      "talep": "={{ $('On form submission').item.json.Talep }}",
+      "ozet": "={{ $json.output.ozet }}"
+     },
+     "matchingColumns": [],
+     "schema": [
+      {
+       "id": "ad",
+       "displayName": "ad",
+       "required": false,
+       "defaultMatch": false,
+       "display": true,
+       "type": "string",
+       "readOnly": false,
+       "removed": false
+      },
+      {
+       "id": "talep",
+       "displayName": "talep",
+       "required": false,
+       "defaultMatch": false,
+       "display": true,
+       "type": "string",
+       "readOnly": false,
+       "removed": false
+      },
+      {
+       "id": "ozet",
+       "displayName": "ozet",
+       "required": false,
+       "defaultMatch": false,
+       "display": true,
+       "type": "string",
+       "readOnly": false,
+       "removed": false
+      }
+     ],
+     "attemptToConvertTypes": false,
+     "convertFieldsToString": false
+    },
+    "options": {}
+   }
+  },
+  {
+   "id": "099b996d-d0e1-41c3-86e0-26b7a4cd6454",
+   "name": "Şikâyet tablosu",
+   "type": "n8n-nodes-base.dataTable",
+   "typeVersion": 1.1,
+   "position": [
+    820,
+    0
+   ],
+   "parameters": {
+    "dataTableId": {
+     "__rl": true,
+     "mode": "list",
+     "value": ""
+    },
+    "columns": {
+     "mappingMode": "defineBelow",
+     "value": {
+      "ad": "={{ $('On form submission').item.json.Ad }}",
+      "talep": "={{ $('On form submission').item.json.Talep }}",
+      "ozet": "={{ $json.output.ozet }}"
+     },
+     "matchingColumns": [],
+     "schema": [
+      {
+       "id": "ad",
+       "displayName": "ad",
+       "required": false,
+       "defaultMatch": false,
+       "display": true,
+       "type": "string",
+       "readOnly": false,
+       "removed": false
+      },
+      {
+       "id": "talep",
+       "displayName": "talep",
+       "required": false,
+       "defaultMatch": false,
+       "display": true,
+       "type": "string",
+       "readOnly": false,
+       "removed": false
+      },
+      {
+       "id": "ozet",
+       "displayName": "ozet",
+       "required": false,
+       "defaultMatch": false,
+       "display": true,
+       "type": "string",
+       "readOnly": false,
+       "removed": false
+      }
+     ],
+     "attemptToConvertTypes": false,
+     "convertFieldsToString": false
+    },
+    "options": {}
+   }
+  },
+  {
+   "id": "c5ec6ef7-bd86-4bae-9162-2277d65edcfd",
+   "name": "Soru tablosu",
+   "type": "n8n-nodes-base.dataTable",
+   "typeVersion": 1.1,
+   "position": [
+    820,
+    160
+   ],
+   "parameters": {
+    "dataTableId": {
+     "__rl": true,
+     "mode": "list",
+     "value": ""
+    },
+    "columns": {
+     "mappingMode": "defineBelow",
+     "value": {
+      "ad": "={{ $('On form submission').item.json.Ad }}",
+      "talep": "={{ $('On form submission').item.json.Talep }}",
+      "ozet": "={{ $json.output.ozet }}"
+     },
+     "matchingColumns": [],
+     "schema": [
+      {
+       "id": "ad",
+       "displayName": "ad",
+       "required": false,
+       "defaultMatch": false,
+       "display": true,
+       "type": "string",
+       "readOnly": false,
+       "removed": false
+      },
+      {
+       "id": "talep",
+       "displayName": "talep",
+       "required": false,
+       "defaultMatch": false,
+       "display": true,
+       "type": "string",
+       "readOnly": false,
+       "removed": false
+      },
+      {
+       "id": "ozet",
+       "displayName": "ozet",
+       "required": false,
+       "defaultMatch": false,
+       "display": true,
+       "type": "string",
+       "readOnly": false,
+       "removed": false
+      }
+     ],
+     "attemptToConvertTypes": false,
+     "convertFieldsToString": false
+    },
+    "options": {}
+   }
+  },
+  {
+   "id": "bd130ca6-1541-4050-9e4e-239779212dfa",
+   "name": "Şikâyet bildirimi",
+   "type": "n8n-nodes-base.emailSend",
+   "typeVersion": 2.1,
+   "position": [
+    1060,
+    0
+   ],
+   "parameters": {
+    "fromEmail": "siz@ornek.com",
+    "toEmail": "siz@ornek.com",
+    "subject": "=Şikâyet: {{ $('On form submission').item.json.Ad }}",
+    "emailFormat": "text",
+    "text": "=Yeni şikâyet.\n\nAd: {{ $('On form submission').item.json.Ad }}\nÖzet: {{ $('Basic LLM Chain').item.json.output.ozet }}\nTalep: {{ $('On form submission').item.json.Talep }}",
+    "options": {
+     "appendAttribution": false
+    }
+   }
+  }
+ ],
+ "connections": {
+  "Switch": {
+   "main": [
+    [
+     {
+      "node": "Sipariş tablosu",
+      "type": "main",
+      "index": 0
+     }
+    ],
+    [
+     {
+      "node": "Şikâyet tablosu",
+      "type": "main",
+      "index": 0
+     }
+    ],
+    [
+     {
+      "node": "Soru tablosu",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "On form submission": {
+   "main": [
+    [
+     {
+      "node": "Basic LLM Chain",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Basic LLM Chain": {
+   "main": [
+    [
+     {
+      "node": "Switch",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Google Gemini Chat Model": {
+   "ai_languageModel": [
+    [
+     {
+      "node": "Basic LLM Chain",
+      "type": "ai_languageModel",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Structured Output Parser": {
+   "ai_outputParser": [
+    [
+     {
+      "node": "Basic LLM Chain",
+      "type": "ai_outputParser",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Şikâyet tablosu": {
+   "main": [
+    [
+     {
+      "node": "Şikâyet bildirimi",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "settings": {
+  "executionOrder": "v1"
+ }
+}
